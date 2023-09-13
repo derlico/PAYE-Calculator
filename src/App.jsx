@@ -1,5 +1,8 @@
 import { useState } from 'react'
 import './App.css'
+import Info from './components/Info'
+import NssfApp from './components/NssfApp'
+import PAYE from './components/PAYE'
 
 function App() {
   
@@ -39,12 +42,19 @@ function App() {
 
   const [showPAYE, setShowPAYE] = useState(false)
   const [paye, setPAYE] = useState(0)
+  const [tier2, setTier2] = useState(false)
 
-  const togglePAYE = () => {
-    setShowPAYE(!showPAYE)
+  const displayPAYE = () => {
+    setShowPAYE(true)
+  }
+
+  const undisplayPAYE = () => {
+    setShowPAYE(false)
   }
 
   let tax = 0;
+ 
+
 
   function calculatePAYE(gross){
     let currentGross = gross;
@@ -106,13 +116,34 @@ function App() {
   
   }
 
+  const calculateNSSF = (salary, nssfRate) =>{
+    if (nssfRate == 'tier-1'){
+      setTier2(false)
+      if (salary >= 18000){ 
+        return 1080
+      }else{
+        return 720
+      }
+    }else{
+      setTier2(true)
+      if (salary >= 18000){ 
+        
+        return 1080
+      }else{
+        return 360
+      }
+    }
+    
+  }
+
   const handleSubmit = async (e) =>{
     e.preventDefault();
     
     const salary = e.target.gross.value
     const nhif = e.target.nhif.value || 0
-    const nssf = e.target.nssf.value || 1080
+    const nssfRate = e.target.nssf.value
     
+    const nssf = calculateNSSF(salary, nssfRate)
 
     const mortgage = e.target.mortgage.value || 0
     const insurance = e.target.insurance.value || 0
@@ -124,7 +155,7 @@ function App() {
     if (nhif || nssf || mortgage || insurance){
         if (nssf <= NSSF_LIMIT ){
           const gross = salary - nssf
-          togglePAYE()
+          displayPAYE()
           setPAYE(calculatePAYE(gross))
         }else{
           alert("Above the Allowable limit!")
@@ -132,7 +163,7 @@ function App() {
        
     } else {
       const gross = salary
-      togglePAYE()
+      displayPAYE()
       setPAYE(calculatePAYE(gross))
     }
  
@@ -162,31 +193,14 @@ function App() {
                     <br />
                 </div>
                 
-                <div className="card border-info">
-                    <div className="card-header pb-0 bg-info text-white">
-                     <h5 className='card-title'>Important Note</h5>
-                    </div>
-                    <ul>
-                      <li>Include <a href="https://www.nssf.or.ke/download/new-nssf-rates/">NSSF rates</a> are included<b> Allowable Limit: </b><i>Ksh 20,000 per month. </i> All pension in excess incur taxes under <a href="https://www.kra.go.ke/individual/filing-paying/types-of-taxes/paye/">KRA rates</a></li>
-                      <li>Mortgage Contributions as per the Income Tax Act. <b>Current Limit: </b><i>Ksh 20,000 per month</i></li>
-                      <li>Insurance Relief @15% of premium or <b>Limit of </b><i>Ksh 60,000 per year</i></li>
-                    </ul>
-                    
-                  </div>
+                  <Info />
                   
                 </div>
                 
                 <div className="col-lg-6 col-md-12 col-sm-12 form-group">
-                  <label htmlFor="nssf">Pension Contribution (NSSF)</label>
-                  <br />
+                 
                   
-                  <div className="form-check form-switch">
-                    <input className="form-check-input" type="radio" name='nssf' value={1080} defaultChecked/>
-                    <label className="form-check-label" htmlFor="nssf"> NSSF Tier 1 & 2</label>
-                    <br />
-                    <input className="form-check-input" type="radio" name='nssf' value={360}/>
-                    <label className="form-check-label" htmlFor="nssf"> NSSF Tier 1</label>
-                  </div>
+                  <NssfApp tier2 ={tier2} setTier2={setTier2}/>
                 
 
                   <label htmlFor="nssf">NHIF Contribution</label>
@@ -197,10 +211,6 @@ function App() {
                   
                   <label htmlFor="relief">Insurance Relief (if any)</label>
                   <input type="number" className='form-control' id="insurance" />
-
-                  <br />
-
-                  <p> <b>Current MPR: </b>Ksh 2,400 p/m</p>
 
                 </div>
                 
@@ -218,20 +228,11 @@ function App() {
                     <button  className='btn btn-success w-50 mb-3'>Calculate PAYE</button>
                   </div>
                   <br />
-                  <hr />
+                  
                   { showPAYE ?
-                  (<div className="container">
-                  <div className="row no-gutters">
-    
-                    <div className="alert alert-success fade show" role='alert'>
-                      <button type="button" className='close' data-dismiss='alert' aria-label='Close' onClick={togglePAYE}>
-                        <span aria-hidden="true">&times;</span>
-                      </button>
-                      <h4 className='alert-heading'>PAYE Calculation Success</h4>
-                      PAYE: {paye.toFixed(2)}
-                    </div>
-                  </div>
-                  </div> ) : null 
+                  (
+                    <PAYE paye={paye} togglePAYE={undisplayPAYE}/>
+                    ) : null 
                 }
                   
                   
