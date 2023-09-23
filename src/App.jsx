@@ -42,7 +42,7 @@ function App() {
 
   const [showPAYE, setShowPAYE] = useState(false)
   const [paye, setPAYE] = useState(0)
-  const [tier2, setTier2] = useState(false)
+  
 
   const displayPAYE = () => {
     setShowPAYE(true)
@@ -200,7 +200,7 @@ function App() {
                 <div className="col-lg-6 col-md-12 col-sm-12 form-group">
                  
                   
-                  <NssfApp tier2 ={tier2} setTier2={setTier2}/>
+                  <NssfApp />
                 
 
                   <label htmlFor="nssf">NHIF Contribution</label>

@@ -1,6 +1,14 @@
 import React from 'react'
+import { Button } from 'react-bootstrap'
+import { useState } from 'react'
 
-export default function NssfApp({tier2, setTier2}) {
+export default function NssfApp() {
+
+  const [tier2, setTier2] = useState(false)
+
+  function addTier2(){
+    setTier2(!tier2)
+  }
     
   return (
     <>
@@ -11,9 +19,19 @@ export default function NssfApp({tier2, setTier2}) {
             <input className="form-check-input" type="radio" name='nssf' value={'tier-1'} defaultChecked/>
             <label className="form-check-label" htmlFor="nssf"> NSSF Tier 1</label>
             <br />
-            <input className="form-check-input" type="radio" name='nssf' value={'tier1-2'} onChange={setTier2(true)}/>
+            <input className="form-check-input" type="radio" name='nssf' value={'tier1-2'}/>
             <label className="form-check-label" htmlFor="nssf"> NSSF Tier 1 & 2</label>
-            
+            { !tier2 ?
+            (
+            <Button variant='link' onClick={addTier2}>Add Tier 2</Button>
+            ) : null 
+            }
+
+            { tier2 ?
+            (
+            <Button variant='link' onClick={addTier2}>Close</Button>
+            ) : null 
+            }
         </div>
         { tier2 ?
             (
